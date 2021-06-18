@@ -16,6 +16,7 @@ type exp = CstInt of int
 		| Fun of ide * exp
 		| Letrec of ide * ide * exp * exp
 		| Apply of exp * exp
+    (*Insiemi*)
     | Empty of ide
     | Singleton of ide * exp 
     | Set of ide * values
@@ -58,7 +59,7 @@ let rec lookup (s:evT env) (i:string) = match s with
 
 (* Typechecking *)
 
-(* Funzione ausiliaria per trasformare i tipi esprimibili in stringhe
+(* Funzione ausiliaria che trasforma i tipi esprimibili in stringhe (ad uso del typechecker dei Set)
 Definita solo per i tipi Int, Bool e String, come da specifica.*)
 let evT2str (e:evT) = match e with 
 | Int(u) -> "int"
@@ -83,10 +84,27 @@ let typecheck (x, y) = match x with
               (match y with 
                           | Bool(u) -> true
                           | _ -> false)
-
+        | "string" -> 
+              (match y with
+                          | String(u) -> true
+                          | _ -> false)
+        | "set" -> 
+              (match y with 
+                          | Set(t, vl) -> 
+                            match t with
+                            | "int" | "bool" | "string" -> setvaluesvalidator t vl
+                            | _ -> false
+                          | _ -> false)
         | _ -> failwith ("not a valid type");;
 
+(*Costruttori di Set*)
+let empty_Set(t) = match evT2str t with
+| _ -> Set(t, []);;
 
+let singleton_Set(t, e:evT) = if typecheck(evT2str t, e) 
+  then let set = empty_Set t in insert e set
+else failwith("singletonConstructor: Cannot instanciate heterogeneous sets.");;
+(*Op. su Interi*)
 let int_eq(x,y) =   
 match (typecheck("int",x), typecheck("int",y), x, y) with
   | (true, true, Int(v), Int(w)) -> Bool(v = w)
@@ -108,6 +126,38 @@ let int_times(x, y) =
   | (_,_,_,_) -> failwith("run-time error ");;
 
 
+
+(*Op. su Insiemi: controllo se è un set: se sì faccio pattern matching con la sua impl. *)
+
+(*TODO: finire union.
+let union(s1, s2) = (match (typecheck("set", s1), typecheck("set", s2), s1, s2)) with
+| (true, true, Set(t1, vl1), Set(t2, vl2)) -> )
+*)
+
+let is_empty(s) = match (typecheck("set", s), s) with
+| (true, Set(t, vl)) -> (match l with | [] -> Bool(true) | _ -> Bool(false))
+| (_,_) -> failwith("is_empty: called on a non-set");;
+
+let member(e:evT, s) = match (typecheck("set"), s) with 
+| (true, Set(t, vl)) -> 
+  if evT2str e = t then 
+    let rec searchList v l = 
+      (match l with
+      | [] -> false
+      | h::tl -> if v = h then true else searchList v tl)
+    in searchList e vl
+  else failwith("member: can't have heterogeneous sets")
+| (_,_) -> failwith("member: called on a non-set");;
+
+let insert(e:evT, s:evT) = match s with
+| Set(t, vl) -> if member e s then Set(t, vl) else Set(t, e::vl)
+| _ -> failwith("insert: called on a non-set");;
+
+
+
+
+
+(*Interprete*)
 let rec eval  (e:exp) (s:evT env) = match e with
  | CstInt(n) -> Int(n)
  | CstTrue -> Bool(true)
