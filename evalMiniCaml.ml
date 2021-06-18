@@ -66,7 +66,7 @@ let evT2str (e:evT) = match e with
 | String(u) -> "string"
 | _ -> failwith("evT2str: unsupported set type");;
 
-
+(* Funzione ausiliaria: controlla, a partire da un tipo t, se l'insieme Set è omogeneo.*)
 let setvaluesvalidator (t:string) vl = 
   match vl with 
   | [] -> true
