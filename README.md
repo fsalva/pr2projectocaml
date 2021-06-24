@@ -15,5 +15,3 @@ Dai un'occhiata anche alla relazione, evito di fare un JIT perché all'interno d
 3. **I test del typechecker statico fanno pena.**
 ![alt text](https://i.kym-cdn.com/photos/images/newsfeed/001/650/747/aaf.png)
 
-
-https://img.shields.io/badge/OCaml-NO%20JIT-brightgreen
