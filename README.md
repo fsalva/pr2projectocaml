@@ -12,6 +12,3 @@ _no_.
 2. **Sei __sicuro-sicuro?__**
 _si_. 
 Dai un'occhiata anche alla relazione, evito di fare un JIT perché all'interno delle chiamate funzionali, viene chiamata una versione della *Apply* pre-compilata, che riceve *evT*, non *espressioni*, quindi durante la eval non viene modificata la struttura sintattica.
-3. **I test del typechecker statico fanno pena.**
-![alt text](https://i.kym-cdn.com/photos/images/newsfeed/001/650/747/aaf.png)
-
